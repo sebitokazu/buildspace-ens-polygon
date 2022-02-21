@@ -21,7 +21,6 @@ contract Domains is ERC721URIStorage {
     string svgPartTwo = '</text></svg>';
 
     mapping(string => address) domains;
-    mapping(address => string) inverseDomain;
     mapping(string => Record) records;
     mapping(string => uint256) domainToNftId;
 
@@ -40,7 +39,7 @@ contract Domains is ERC721URIStorage {
     function price(string calldata name) public pure returns(uint) {
         uint len = StringUtils.strlen(name);
         require(len > 0, "Domain can't be blank");
-        if (len == 3) {
+        if (len <= 3) {
             return 5 * 10**17; // 5 MATIC = 5 000 000 000 000 000 000 (18 decimals). We're going with 0.5 Matic cause the faucets don't give a lot
         } else if (len == 4) {
             return 3 * 10**17; // To charge smaller amounts, reduce the decimals. This is 0.3
@@ -94,8 +93,8 @@ contract Domains is ERC721URIStorage {
         _safeMint(msg.sender, newRecordId);
         _setTokenURI(newRecordId, finalTokenUri);
         domains[_name] = msg.sender;
-        inverseDomain[msg.sender] = _name;
         records[_name] = Record('','','');
+        domainToNftId[_name] = newRecordId;
 
         console.log("%s has registered the domain %s with token ID %d", msg.sender, finalName, newRecordId);
     }
@@ -104,8 +103,8 @@ contract Domains is ERC721URIStorage {
         return domains[_name];
     }
 
-    function getDomain(address _address) public view returns (string memory){
-        return inverseDomain[_address];
+    function getNftId(string calldata _name) public view returns (uint){
+        return domainToNftId[_name];
     }
 
     function getRecord(string calldata _name) view public returns (Record memory) {
