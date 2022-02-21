@@ -12,6 +12,7 @@ import "hardhat/console.sol";
 contract Domains is ERC721URIStorage {
 
     string public tld;
+    address payable public owner;
 
     using Counters for Counters.Counter;
     Counters.Counter private _tokenIds;
@@ -31,6 +32,7 @@ contract Domains is ERC721URIStorage {
     }
 
     constructor(string memory _tld) payable ERC721("Ibis Name Service", "INS"){
+        owner = payable(msg.sender);
         tld = _tld;
         console.log(".%s domain service contract deployed", _tld);
     }
@@ -142,4 +144,20 @@ contract Domains is ERC721URIStorage {
 
         console.log("Setting Twitter record to %s for domain %s", _twitter, _name);
     }
+
+    modifier onlyOwner() {
+        require(isOwner());
+        _;
+    }
+
+    function isOwner() public view returns (bool) {
+        return msg.sender == owner;
+    }
+
+    function withdraw() public onlyOwner {
+        uint amount = address(this).balance;
+        
+        (bool success, ) = msg.sender.call{value: amount}("");
+        require(success, "Failed to withdraw Matic");
+    } 
 }

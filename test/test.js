@@ -191,5 +191,33 @@ describe('Polygon domain service', () => {
             await deployedContract.register(domain,{ value: hre.ethers.utils.parseEther('0.1')});
             expect(deployedContract.connect(randomPerson).setAllRecords(domain, nickname, spotifyLink, twitter)).to.be.revertedWith("You're not the owner of the domain");
         });
-    })
+    });
+
+    describe('Withdrawing funds', () => {
+
+        it('Withdrawing funds from owner account', async () => {
+            const { owner, deployedContract, randomPerson } = await setup({ });
+
+            const domain = 'messi';
+
+            await deployedContract.connect(randomPerson).register(domain,{ value: hre.ethers.utils.parseEther('0.1')});
+            const tx = await deployedContract.withdraw();
+
+            const finalContractBalance = await hre.ethers.provider.getBalance(deployedContract.address);
+
+            expect(finalContractBalance).to.be.equal(hre.ethers.utils.parseEther('0'), "Funds weren't withdraw successfully");
+        });
+
+        it('Withdrawing funds from random account should fail', async () => {
+            const { owner, deployedContract, randomPerson } = await setup({ });
+
+            const domain = 'messi';
+            const prevBalance = await owner.getBalance();
+
+            await deployedContract.connect(randomPerson).register(domain,{ value: hre.ethers.utils.parseEther('0.1')});
+            
+            expect(deployedContract.connect(randomPerson).withdraw()).to.be.revertedWith('Failed to withdraw Matic');
+        });
+
+    });
 });
