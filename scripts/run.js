@@ -28,6 +28,9 @@ const main = async () => {
   const domainRecords = await domainContract.getRecord("itoka");
   console.log("Record of domain itoka:", domainRecords);
 
+  const names = await domainContract.getAllNames();
+  console.log("All minted domains: ", names);
+
   // Quick! Grab the funds from the contract! (as superCoder)
   try {
     txn = await domainContract.connect(randomPerson).withdraw();

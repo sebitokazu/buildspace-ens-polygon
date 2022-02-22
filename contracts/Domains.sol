@@ -168,8 +168,8 @@ contract Domains is ERC721URIStorage {
     function getAllNames() public view returns (string[] memory) {
         string[] memory allNames = new string[](_tokenIds.current());
         for (uint i = 1; i <= _tokenIds.current(); i++) {
-            allNames[i] = names[i];
-            console.log("Name for token %d is %s", i, allNames[i]);
+            allNames[i-1] = names[i];
+            console.log("Name for token %d is %s", i, allNames[i-1]);
         }
         return allNames;
     }
