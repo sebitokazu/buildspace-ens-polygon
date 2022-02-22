@@ -72,7 +72,15 @@ describe('Polygon domain service', () => {
 
             const domain = '';
 
-            expect(deployedContract.register(domain,{ value: hre.ethers.utils.parseEther('0.1')})).to.be.revertedWith("Domain can't be blank");
+            expect(deployedContract.register(domain,{ value: hre.ethers.utils.parseEther('0.1')})).to.be.revertedWith("Domain name must be between 1 and 15 characters");
+        });
+
+        it('Register too long domain should fail', async() => {
+            const { deployedContract, randomPerson } = await setup({});
+
+            const domain = 'superduperhyperlargedomain';
+
+            expect(deployedContract.register(domain,{ value: hre.ethers.utils.parseEther('0.1')})).to.be.revertedWith("Domain name must be between 1 and 15 characters");
         });
 
 

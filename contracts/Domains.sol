@@ -9,6 +9,7 @@ import { Base64 } from "./libraries/Base64.sol";
 
 import "hardhat/console.sol";
 
+
 contract Domains is ERC721URIStorage {
 
     string public tld;
@@ -24,6 +25,7 @@ contract Domains is ERC721URIStorage {
     mapping(string => address) domains;
     mapping(string => Record) records;
     mapping(string => uint256) domainToNftId;
+    mapping (uint => string) public names;
 
     struct Record {
         string nickname;
@@ -40,7 +42,6 @@ contract Domains is ERC721URIStorage {
       // This function will give us the price of a domain based on length
     function price(string calldata name) public pure returns(uint) {
         uint len = StringUtils.strlen(name);
-        require(len > 0, "Domain can't be blank");
         if (len <= 3) {
             return 5 * 10**17; // 5 MATIC = 5 000 000 000 000 000 000 (18 decimals). We're going with 0.5 Matic cause the faucets don't give a lot
         } else if (len == 4) {
@@ -52,6 +53,8 @@ contract Domains is ERC721URIStorage {
 
     function register(string calldata _name) public payable{
         require(domains[_name] == address(0), "Domain is already registered");
+
+        require(valid(_name), "Domain name must be between 1 and 15 characters");
 
         uint _price = price(_name);
         // Check if enough Matic was paid in the transaction
@@ -97,6 +100,7 @@ contract Domains is ERC721URIStorage {
         domains[_name] = msg.sender;
         records[_name] = Record('','','');
         domainToNftId[_name] = newRecordId;
+        names[newRecordId] = _name;
 
         console.log("%s has registered the domain %s with token ID %d", msg.sender, finalName, newRecordId);
     }
@@ -160,4 +164,17 @@ contract Domains is ERC721URIStorage {
         (bool success, ) = msg.sender.call{value: amount}("");
         require(success, "Failed to withdraw Matic");
     } 
+
+    function getAllNames() public view returns (string[] memory) {
+        string[] memory allNames = new string[](_tokenIds.current());
+        for (uint i = 1; i <= _tokenIds.current(); i++) {
+            allNames[i] = names[i];
+            console.log("Name for token %d is %s", i, allNames[i]);
+        }
+        return allNames;
+    }
+
+    function valid(string calldata name) public pure returns(bool) {
+        return StringUtils.strlen(name) >= 1 && StringUtils.strlen(name) <= 15;
+    }
 }
