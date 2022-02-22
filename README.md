@@ -1,15 +1,26 @@
-# Basic Sample Hardhat Project
+# Ibis Name Service on Polygon built with [buildspace](https://buildspace.so/)
 
-This project demonstrates a basic Hardhat use case. It comes with a sample contract, a test for that contract, a sample script that deploys that contract, and an example of a task implementation, which simply lists the available accounts.
+Live @ Polygon Mumbai Devnet: https://polygon-ethereum-name-service.vercel.app/
 
-Try running some of the following tasks:
+Web3 dApp like Ethereum Name Service, that let's you mint a *.ibis* domain and set records to it. 
 
-```shell
-npx hardhat accounts
-npx hardhat compile
-npx hardhat clean
-npx hardhat test
-npx hardhat node
-node scripts/sample-script.js
-npx hardhat help
-```
+Also, gives you an on-chain generated NFT, that you can show off on OpenSea (testnet of course).
+
+![Screenshot of production app](https://i.imgur.com/N6Lxi02.png)
+
+## Backend
+
+- Solidity
+- Hardhat
+- Ethers.js
+- Chai
+- Alchemy
+
+## Frontend
+
+- React
+- Ethers.js
+- Injected web3 provider: Metamask
+
+Link to frontend repo: https://github.com/sebitokazu/domain-starter
+
