@@ -1,10 +1,11 @@
-const { expect } = require("chai");
+import { ethers } from "hardhat";
+import { expect } from "chai";
 
 describe('Polygon domain service', () => {
 
     const setup = async({ tld = 'ibis' }) =>{
-        const [owner, randomPerson] = await hre.ethers.getSigners();
-        const domainContractFactory = await hre.ethers.getContractFactory("Domains");
+        const [owner, randomPerson] = await ethers.getSigners();
+        const domainContractFactory = await ethers.getContractFactory("Domains");
         const deployedContract = await domainContractFactory.deploy(tld);
         await deployedContract.deployed();
 
@@ -37,8 +38,8 @@ describe('Polygon domain service', () => {
             const priceA = await deployedContract.price(domainA);
             const priceB = await deployedContract.price(domainB);
             
-            expect(priceA).to.be.equal(hre.ethers.utils.parseEther('0.5'), "3 or less characters domain should cost 0.5 MATIC");
-            expect(priceB).to.be.equal(hre.ethers.utils.parseEther('0.5'), "3 or less characters domain should cost 0.5 MATIC");
+            expect(priceA).to.be.equal(ethers.utils.parseEther('0.5'), "3 or less characters domain should cost 0.5 MATIC");
+            expect(priceB).to.be.equal(ethers.utils.parseEther('0.5'), "3 or less characters domain should cost 0.5 MATIC");
         });
 
         it('Checks that price for 4 characters domain is 0.3 MATIC', async() =>{
@@ -48,7 +49,7 @@ describe('Polygon domain service', () => {
 
             const price = await deployedContract.price(domain);
             
-            expect(price).to.be.equal(hre.ethers.utils.parseEther('0.3'), "4 characters domain should cost 0.3 MATIC");
+            expect(price).to.be.equal(ethers.utils.parseEther('0.3'), "4 characters domain should cost 0.3 MATIC");
         });
 
         it('Checks that price for 5 or more characters domain is 0.1 MATIC', async() =>{
@@ -60,8 +61,8 @@ describe('Polygon domain service', () => {
             const priceA = await deployedContract.price(domainA);
             const priceB = await deployedContract.price(domainB);
             
-            expect(priceA).to.be.equal(hre.ethers.utils.parseEther('0.1'), "5 or more characaters domain should cost 0.1 MATIC");
-            expect(priceB).to.be.equal(hre.ethers.utils.parseEther('0.1'), "5 or more characaters domain should cost 0.1 MATIC");
+            expect(priceA).to.be.equal(ethers.utils.parseEther('0.1'), "5 or more characaters domain should cost 0.1 MATIC");
+            expect(priceB).to.be.equal(ethers.utils.parseEther('0.1'), "5 or more characaters domain should cost 0.1 MATIC");
         });
     });
 
@@ -72,7 +73,7 @@ describe('Polygon domain service', () => {
 
             const domain = '';
 
-            expect(deployedContract.register(domain,{ value: hre.ethers.utils.parseEther('0.1')})).to.be.revertedWith("Domain name must be between 1 and 15 characters");
+            expect(deployedContract.register(domain,{ value: ethers.utils.parseEther('0.1')})).to.be.revertedWith("Domain name must be between 1 and 15 characters");
         });
 
         it('Register too long domain should fail', async() => {
@@ -80,7 +81,7 @@ describe('Polygon domain service', () => {
 
             const domain = 'superduperhyperlargedomain';
 
-            expect(deployedContract.register(domain,{ value: hre.ethers.utils.parseEther('0.1')})).to.be.revertedWith("Domain name must be between 1 and 15 characters");
+            expect(deployedContract.register(domain,{ value: ethers.utils.parseEther('0.1')})).to.be.revertedWith("Domain name must be between 1 and 15 characters");
         });
 
 
@@ -89,7 +90,7 @@ describe('Polygon domain service', () => {
 
             const domain = 'messi';
 
-            await deployedContract.connect(randomPerson).register(domain,{ value: hre.ethers.utils.parseEther('0.1')});
+            await deployedContract.connect(randomPerson).register(domain,{ value: ethers.utils.parseEther('0.1')});
             const domainOwner = await deployedContract.getAddress(domain);
 
             expect(domainOwner).to.be.equal(randomPerson.address, 'Domain owner is not contract caller');
@@ -100,7 +101,7 @@ describe('Polygon domain service', () => {
 
             const domain = 'messi';
 
-            await deployedContract.register(domain,{ value: hre.ethers.utils.parseEther('0.1')});
+            await deployedContract.register(domain,{ value: ethers.utils.parseEther('0.1')});
             const domainNftId = await deployedContract.getNftId(domain);
 
             expect(domainNftId).to.be.equal(1, 'First NFT Token Id should be 1');
@@ -111,9 +112,9 @@ describe('Polygon domain service', () => {
 
             const domain = 'messi';
 
-            await deployedContract.connect(owner).register(domain,{ value: hre.ethers.utils.parseEther('0.1')});
+            await deployedContract.connect(owner).register(domain,{ value: ethers.utils.parseEther('0.1')});
 
-            expect(deployedContract.connect(randomPerson).register(domain,{ value: hre.ethers.utils.parseEther('0.1')})).to.be.revertedWith("Domain is already registered");
+            expect(deployedContract.connect(randomPerson).register(domain,{ value: ethers.utils.parseEther('0.1')})).to.be.revertedWith("Domain is already registered");
         });
 
         it('Register domain with not enough MATIC should fail', async() => {
@@ -121,7 +122,7 @@ describe('Polygon domain service', () => {
 
             const domain = 'as';
 
-            expect(deployedContract.connect(randomPerson).register(domain,{ value: hre.ethers.utils.parseEther('0.1')})).to.be.revertedWith("Not enough MATIC paid");
+            expect(deployedContract.connect(randomPerson).register(domain,{ value: ethers.utils.parseEther('0.1')})).to.be.revertedWith("Not enough MATIC paid");
         });
 
     });
@@ -136,7 +137,7 @@ describe('Polygon domain service', () => {
             const spotifyLink = 'https://open.spotify.com/track/4JC18crxRPZOuTqBfXKFIR?si=3039c8bc0af44103';
             const twitter = 'TeamMessi';
 
-            await deployedContract.register(domain,{ value: hre.ethers.utils.parseEther('0.1')});
+            await deployedContract.register(domain,{ value: ethers.utils.parseEther('0.1')});
             await deployedContract.setAllRecords(domain, nickname, spotifyLink, twitter);
 
             const domainRecords = await deployedContract.getRecord(domain);
@@ -152,7 +153,7 @@ describe('Polygon domain service', () => {
             const domain = 'messi';
             const nickname = 'GOAT';
 
-            await deployedContract.register(domain,{ value: hre.ethers.utils.parseEther('0.1')});
+            await deployedContract.register(domain,{ value: ethers.utils.parseEther('0.1')});
             await deployedContract.setNickname(domain, nickname);
 
             const domainRecords = await deployedContract.getRecord(domain);
@@ -166,7 +167,7 @@ describe('Polygon domain service', () => {
             const domain = 'messi';
             const spotifyLink = 'https://open.spotify.com/track/4JC18crxRPZOuTqBfXKFIR?si=3039c8bc0af44103';
 
-            await deployedContract.register(domain,{ value: hre.ethers.utils.parseEther('0.1')});
+            await deployedContract.register(domain,{ value: ethers.utils.parseEther('0.1')});
             await deployedContract.setSpotifyLink(domain, spotifyLink);
 
             const domainRecords = await deployedContract.getRecord(domain);
@@ -180,7 +181,7 @@ describe('Polygon domain service', () => {
             const domain = 'messi';
             const twitter = 'TeamMessi';
 
-            await deployedContract.register(domain,{ value: hre.ethers.utils.parseEther('0.1')});
+            await deployedContract.register(domain,{ value: ethers.utils.parseEther('0.1')});
             await deployedContract.setTwitter(domain, twitter);
 
             const domainRecords = await deployedContract.getRecord(domain);
@@ -196,7 +197,7 @@ describe('Polygon domain service', () => {
             const spotifyLink = 'https://open.spotify.com/track/4JC18crxRPZOuTqBfXKFIR?si=3039c8bc0af44103';
             const twitter = 'TeamMessi';
 
-            await deployedContract.register(domain,{ value: hre.ethers.utils.parseEther('0.1')});
+            await deployedContract.register(domain,{ value: ethers.utils.parseEther('0.1')});
             expect(deployedContract.connect(randomPerson).setAllRecords(domain, nickname, spotifyLink, twitter)).to.be.revertedWith("You're not the owner of the domain");
         });
     });
@@ -208,12 +209,12 @@ describe('Polygon domain service', () => {
 
             const domain = 'messi';
 
-            await deployedContract.connect(randomPerson).register(domain,{ value: hre.ethers.utils.parseEther('0.1')});
+            await deployedContract.connect(randomPerson).register(domain,{ value: ethers.utils.parseEther('0.1')});
             const tx = await deployedContract.withdraw();
 
-            const finalContractBalance = await hre.ethers.provider.getBalance(deployedContract.address);
+            const finalContractBalance = await ethers.provider.getBalance(deployedContract.address);
 
-            expect(finalContractBalance).to.be.equal(hre.ethers.utils.parseEther('0'), "Funds weren't withdraw successfully");
+            expect(finalContractBalance).to.be.equal(ethers.utils.parseEther('0'), "Funds weren't withdraw successfully");
         });
 
         it('Withdrawing funds from random account should fail', async () => {
@@ -222,7 +223,7 @@ describe('Polygon domain service', () => {
             const domain = 'messi';
             const prevBalance = await owner.getBalance();
 
-            await deployedContract.connect(randomPerson).register(domain,{ value: hre.ethers.utils.parseEther('0.1')});
+            await deployedContract.connect(randomPerson).register(domain,{ value: ethers.utils.parseEther('0.1')});
             
             expect(deployedContract.connect(randomPerson).withdraw()).to.be.revertedWith('Failed to withdraw Matic');
         });

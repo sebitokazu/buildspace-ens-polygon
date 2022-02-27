@@ -1,5 +1,12 @@
-require("@nomiclabs/hardhat-waffle");
-require("dotenv").config();
+import { HardhatUserConfig } from "hardhat/config";
+import { task } from "hardhat/config";
+import '@typechain/hardhat'
+import '@nomiclabs/hardhat-ethers'
+import '@nomiclabs/hardhat-waffle'
+import dotenv from "dotenv";
+
+dotenv.config();
+const PRIVATE_KEY = process.env.METAMASK_PRIVATE_KEY || "";
 
 // This is a sample Hardhat task. To learn how to create your own go to
 // https://hardhat.org/guides/create-task.html
@@ -17,12 +24,14 @@ task("accounts", "Prints the list of accounts", async (taskArgs, hre) => {
 /**
  * @type import('hardhat/config').HardhatUserConfig
  */
-module.exports = {
+const config: HardhatUserConfig = {
   solidity: "0.8.10",
   networks: {
 		mumbai: {
       url: process.env.ALCHEMY_API_KEY,
-      accounts: [process.env.METAMASK_PRIVATE_KEY],
+      accounts: [PRIVATE_KEY],
 		}
   }
-};
+}
+
+export default config;
