@@ -1,11 +1,15 @@
+import { run, ethers } from "hardhat";
+
 const main = async () => {
-    const domainContractFactory = await hre.ethers.getContractFactory('Domains');
+    await run("compile");
+
+    const domainContractFactory = await ethers.getContractFactory('Domains');
     const domainContract = await domainContractFactory.deploy("ibis");
     await domainContract.deployed();
   
     console.log("Contract deployed to:", domainContract.address);
   
-    let txn = await domainContract.register("d10s",  {value: hre.ethers.utils.parseEther('0.3')});
+    let txn = await domainContract.register("d10s",  {value: ethers.utils.parseEther('0.3')});
     await txn.wait();
     console.log("Minted domain d10s.ibis");
   
@@ -16,8 +20,8 @@ const main = async () => {
     const address = await domainContract.getAddress("d10s");
     console.log("Owner of domain d10s:", address);
   
-    const balance = await hre.ethers.provider.getBalance(domainContract.address);
-    console.log("Contract balance:", hre.ethers.utils.formatEther(balance));
+    const balance = await ethers.provider.getBalance(domainContract.address);
+    console.log("Contract balance:", ethers.utils.formatEther(balance));
   }
   
   const runMain = async () => {
